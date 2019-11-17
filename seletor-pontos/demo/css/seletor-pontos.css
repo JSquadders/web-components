@@ -1,0 +1,8 @@
+input[type='checkbox']:checked {
+	background-color:rgb(8, 143, 200);
+	transition: background-color 0.5s;
+}
+
+#div-pontos-extras {
+	margin-top: 10px;
+}

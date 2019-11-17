@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang='pt-br'>
+<head>
+	<title>Custom element de pontos</title>
+	<meta charset='UTF-8'>
+	<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	<meta name='viewport' content='width=device-width, initial-scale=1'>
+</head>
+<body>
+	<div>
+		Padrão <seletor-pontos data-max-pontos="5"></seletor-pontos>
+		<br/>
+		
+		Com 5 pontos extras
+		<seletor-pontos data-max-pontos='5' data-pontos='1' data-max-pontos-extras='5'></seletor-pontos>
+		<br/>
+		Com style inline (background-color)
+		<seletor-pontos data-max-pontos='7' data-max-pontos-extras='6' data-pontos='2' style='background-color: lightgray;'></seletor-pontos>
+		<br/>
+		Com CSS inline para alterar cor e espaçamento, e com style display: flex
+		<seletor-pontos data-max-pontos='8' data-max-pontos-extras='10' data-pontos='3' style='display: flex'
+			data-css=
+				'input[type="checkbox"]:checked {
+					background-color:rgb(20, 150, 210);
+				}
+
+				#div-pontos-extras {
+					padding-left: 10px;
+				}'
+		></seletor-pontos>
+		<br/>
+		Com uma folha de estilos externa. Caso ocorra FOUC, utilize CSS inline, conforme exemplo acima
+		<seletor-pontos data-max-pontos='10' data-max-pontos-extras='3' data-pontos='4' style='display: flex; flex-flow: column nowrap;' data-stylesheet='./css/seletor-pontos.css'></seletor-pontos>
+		<br/>
+		Com evento (veja saída no console)
+		<seletor-pontos id='seletor-evento' data-max-pontos='5'></seletor-pontos>
+		<br/>
+		Interceptando e cancelando evento
+		<seletor-pontos id='seletor-evento-cancelado' data-max-pontos='5'></seletor-pontos>
+	</div>
+	<script type='module' src='./js/seletor-pontos.mjs'></script>
+	<script>
+		document.querySelector('#seletor-evento').addEventListener('mudarpontos', evento => {
+			console.log('Valor antigo: ' + evento.detail.valorAntigo);
+			console.log('Valor novo: ' + evento.detail.valorNovo);
+		});
+
+		document.querySelector('#seletor-evento-cancelado').addEventListener('mudarpontos', event => event.preventDefault());
+	</script>
+</body>
+</html>

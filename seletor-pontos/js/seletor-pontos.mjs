@@ -96,8 +96,10 @@ export class SeletorPontos extends HTMLElement {
 
 		eval(this.getAttribute('aomudarpontos'));
 		
-		if (!this.dispatchEvent(new CustomEvent('mudarpontos', {detail: {valorNovo: valor, valorAntigo: this._pontos}, bubbles: true, cancelable: true})))
+		if (!this.dispatchEvent(new CustomEvent('mudarpontos', {detail: {valorNovo: valor, valorAntigo: this._pontos}, bubbles: true, cancelable: true}))) {
+			this.atualizarBolinhas();
 			return;
+		}
 			
 		this._pontos = valor;
 		this.observar(false);
@@ -140,20 +142,20 @@ export class SeletorPontos extends HTMLElement {
 
 			.remover-atributo {
 				background-color: rgb(161, 65, 36);
-				border-color: rgb(104, 44, 25);
+				border: var(--bolinha-borda, solid 1px #ccc);
 			}
 
 			.remover-atributo:active {
-				border: 1px solid rgb(104, 44, 25);
+				border: var(--bolinha-borda, solid 1px #ccc);
 			}
 
 			.adicionar-atributo {
 				background-color: rgb(41, 133, 175);
-				border-color: rgb(25, 87, 116);
+				border: var(--bolinha-borda, solid 1px #ccc);
 			}
 
 			.adicionar-atributo:active {
-				border: 1px solid rgb(25, 87, 116);
+				border: var(--bolinha-borda, solid 1px #ccc);
 			}
 
 			.fadeOut {
@@ -193,7 +195,7 @@ export class SeletorPontos extends HTMLElement {
 
 			.campo-redondo {
 				border-radius: 100%;
-				border: 1px solid darkslategray;	
+				border: var(--bolinha-borda, solid 1px #ccc);
 				vertical-align: middle;
 				text-align: center;
 				font-size: 14px;
@@ -204,7 +206,7 @@ export class SeletorPontos extends HTMLElement {
 
 			.campo-redondo-medio {
 				border-radius: 100%;
-				border: 1px solid darkslategray;	
+				border: var(--bolinha-borda, solid 1px #ccc);
 				vertical-align: middle;
 				text-align: center;
 				font-weight: bold;

@@ -5,15 +5,7 @@ Demo (sem módulos): https://codepen.io/Leokuma/pen/ZEEVLzE
 
 ###### Exemplo
 ```html
-<seletor-pontos data-max-pontos='5' data-max-pontos-extras='5' data-pontos='0' style='display: flex'
-	data-css=
-		'input[type="checkbox"]:checked {
-			background-color: rgb(20, 150, 210);
-		}
-		#div-pontos-extras {
-			padding-left: 10px;
-		}'
-></seletor-pontos>
+<seletor-pontos data-max-pontos='5' data-max-pontos-extras='5' data-pontos='0'></seletor-pontos>
 ```
 
 --------------------
@@ -27,16 +19,23 @@ Máximo de pontos _extras_, que são exibidos além das bolinhas. O total de pon
 ##### `data-pontos`
 Número de pontos atual.
 
-##### `style`
-Os estilos introduzidos nesse atributo são aplicados à `<div>` que agrupa o elemento como um todo.
+-------
+### CSS
+As custom properties listadas abaixo podem ser usadas para customizar o estilo do componente.
 
-##### `data-css`
-Permite introduzir estilos como numa tag `<style>`, utilizando seletores. Esses estilos podem sobrescrever o estilo padrão do componente. Utilize, por exemplo, os seletores `#div-pontos-principal` e `#div-pontos-extras` para selecionar as `<div>` das bolinhas e dos pontos extras respectivamente.
+##### `--bolinha-marcada`
+Cor de fundo das bolinhas quando marcadas.
 
-##### `data-stylesheet`
-Recebe o caminho para uma folha de estilos externa. Caso ocorra FOUC, utilize os métodos inline de estilização mencionados acima.
+##### `--bolinha-desmarcada`
+Cor de fundo das bolinhas quando desmarcadas.
 
-Útil para aplicar um mesmo estilo a diversos `<seletor-pontos>`. Mesmo estando marcada em vários `<seletor-pontos>`, a folha de estilos é baixada uma única vez e cacheada pelo navegador.
+##### `--bolinha-borda`
+Propriedade `border` das bolinhas.  
+Exemplo: `solid 1px blue`.
+
+##### `--bolinha-margem`
+Propriedade `margin` das bolinhas.  
+Exemplo: `10px`.
 
 -----------------
 ### Eventos

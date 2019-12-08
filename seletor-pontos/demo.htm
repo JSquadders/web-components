@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang='pt-br'>
+<head>
+	<title>Custom element de pontos</title>
+	<meta charset='UTF-8'>
+	<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	<meta name='viewport' content='width=device-width, initial-scale=1'>
+	<style>
+		:root {
+			--bolinha-marcada: #5599F2;
+			--bolinha-desmarcada: #eee;
+			--bolinha-borda: solid 1px blue;
+			--bolinha-margem: 10px;
+		}
+	</style>
+</head>
+<body>
+	<div>
+		Padrão <seletor-pontos data-max-pontos="5" data-pontos="2"></seletor-pontos>
+		<br/>
+		Com 5 pontos extras
+		<seletor-pontos style="--bolinha-marcada: lime" data-max-pontos='5' data-pontos='1' data-max-pontos-extras='5'></seletor-pontos>
+		<br/>
+		Com evento (veja saída no console)
+		<seletor-pontos id='seletor-evento' data-max-pontos='5'></seletor-pontos>
+		<br/>
+		Interceptando e cancelando evento
+		<seletor-pontos id='seletor-evento-cancelado' data-max-pontos='5'></seletor-pontos>
+	</div>
+	<script type='module' src='./js/seletor-pontos.mjs'></script>
+	<script>
+		document.querySelector('#seletor-evento').addEventListener('mudarpontos', evento => {
+			console.log('Valor antigo: ' + evento.detail.valorAntigo);
+			console.log('Valor novo: ' + evento.detail.valorNovo);
+		});
+
+		document.querySelector('#seletor-evento-cancelado').addEventListener('mudarpontos', event => event.preventDefault());
+	</script>
+</body>
+</html>

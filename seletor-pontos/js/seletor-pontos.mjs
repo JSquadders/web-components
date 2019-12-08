@@ -10,7 +10,6 @@ export class SeletorPontos extends HTMLElement {
 	init() {
 		this.observar(false);
 		this.initDOM();
-		this.initCSS();
 		this.initEvents();
 		this.pontos = this.dataset.pontos;
 		this.observar(true);
@@ -29,7 +28,7 @@ export class SeletorPontos extends HTMLElement {
 		for (let i = 1; i <= maxPontos; i++) {
 			const checkbox = document.createElement('input');
 			checkbox.setAttribute('type', 'checkbox');
-			checkbox.setAttribute('name', name);
+			if (name) checkbox.setAttribute('name', name);
 			checkbox.setAttribute('value', i);
 			pontosPrincipaisDiv.append(checkbox);
 		}
@@ -66,21 +65,8 @@ export class SeletorPontos extends HTMLElement {
 			this._observador.disconnect();
 	}
 
-	initCSS() {
-		if (!!this.dataset.stylesheet)
-			this.shadowRoot.querySelector('link').setAttribute('href', this.dataset.stylesheet)
-		else
-			this.shadowRoot.querySelector('link').remove();
-		
-		if (!!this.dataset.css)
-			this.shadowRoot.querySelector('style').append(this.dataset.css);
-		
-		if (this.hasAttribute('style'))
-			this._divPrincipal.style = this.getAttribute('style');
-	}
-
 	atualizarBolinhas() {
-		this._divPontosPrincipais.querySelectorAll("input[type='checkbox']").forEach(checkbox => checkbox.checked = (+checkbox.value <= this.pontos));
+		this._divPontosPrincipais.querySelectorAll('input[type="checkbox"]').forEach(checkbox => checkbox.checked = (+checkbox.value <= this.pontos));
 		if (!!this._divPontosExtras) {
 			if (this.pontos >= +this.dataset.maxPontos) {
 				const pontosExtras = this.pontos - this.dataset.maxPontos;
@@ -110,8 +96,10 @@ export class SeletorPontos extends HTMLElement {
 
 		eval(this.getAttribute('aomudarpontos'));
 		
-		if (!this.dispatchEvent(new CustomEvent('mudarpontos', {detail: {valorNovo: valor, valorAntigo: this._pontos}, bubbles: true, cancelable: true})))
+		if (!this.dispatchEvent(new CustomEvent('mudarpontos', {detail: {valorNovo: valor, valorAntigo: this._pontos}, bubbles: true, cancelable: true}))) {
+			this.atualizarBolinhas();
 			return;
+		}
 			
 		this._pontos = valor;
 		this.observar(false);
@@ -126,27 +114,24 @@ export class SeletorPontos extends HTMLElement {
 			input[type='checkbox'] {	
 				width: 15px;
 				height: 15px;
-				background-color: white;
+				background-color: var(--bolinha-desmarcada, white);
 				border-radius: 50%;
 				vertical-align: middle;
-				border: 1px solid;
-				border-color: darkslategrey;
+				border: var(--bolinha-borda, solid 1px #ccc);
 				-webkit-appearance: none;
 				outline: none;
-				cursor: pointer;	
-				margin-right: 5px;
-				margin-left: 5px;
-				margin-top: 8px;
+				cursor: pointer;
+				margin: var(--bolinha-margem, 8px 5px 0px 5px);
 				transform: scale(1.5);
 				transition: background-color 0.5s;
 			}
 
 			input[type='checkbox']:checked {
-				background-color:rgb(8, 143, 98);
+				background-color: var(--bolinha-marcada, rgb(8, 143, 98));
 				transition: background-color 0.5s;
 			}
 
-			.botao{	
+			.botao {
 				cursor: pointer;
 				border: 2px solid;
 				border-radius: 100%;
@@ -155,62 +140,62 @@ export class SeletorPontos extends HTMLElement {
 				outline: none;
 			}
 
-			.remover-atributo{
-				background-color:rgb(161, 65, 36);
-				border-color: rgb(104, 44, 25);
+			.remover-atributo {
+				background-color: rgb(161, 65, 36);
+				border: var(--bolinha-borda, solid 1px #ccc);
 			}
 
-			.remover-atributo:active{
-				border: 1px solid rgb(104, 44, 25);
+			.remover-atributo:active {
+				border: var(--bolinha-borda, solid 1px #ccc);
 			}
 
-			.adicionar-atributo{
-				background-color:rgb(41, 133, 175);
-				border-color: rgb(25, 87, 116);
+			.adicionar-atributo {
+				background-color: rgb(41, 133, 175);
+				border: var(--bolinha-borda, solid 1px #ccc);
 			}
 
-			.adicionar-atributo:active{
-				border: 1px solid rgb(25, 87, 116);
+			.adicionar-atributo:active {
+				border: var(--bolinha-borda, solid 1px #ccc);
 			}
 
-			.fadeOut{
+			.fadeOut {
 				opacity: 0;
 				transition: opacity 0.5s;
 				pointer-events: none;
 			}
 
-			.fastFadeIn{
+			.fastFadeIn {
 				opacity: 1;
 				transition: opacity 0.5s;
 			}
 
-			.fadeIn{
+			.fadeIn {
 				opacity: 1;
 				transition: opacity 1s;
 			}
 
-			.slowFadeIn{
+			.slowFadeIn {
 				opacity: 1;
 				transition: opacity 3s;
 			}
 
-			.campo{
+			.campo {
 				margin: 0;
 				padding-bottom: 1em;
 				border: 1px solid #ccc;
 				padding: .7em;
 			}
 
-			.campo-medio{
+			.campo-medio {
 				display: inline-block;
 				padding-right: .5em;
 				width: 75%;
 				height: 40px;
 			}
 
-			.campo-redondo{
+			.campo-redondo {
 				border-radius: 100%;
-				border: 1px solid darkslategray;	
+				border: var(--bolinha-borda, solid 1px #ccc);
 				vertical-align: middle;
 				text-align: center;
 				font-size: 14px;
@@ -219,9 +204,9 @@ export class SeletorPontos extends HTMLElement {
 				height: 40px;	
 			}
 
-			.campo-redondo-medio{
+			.campo-redondo-medio {
 				border-radius: 100%;
-				border: 1px solid darkslategray;	
+				border: var(--bolinha-borda, solid 1px #ccc);
 				vertical-align: middle;
 				text-align: center;
 				font-weight: bold;
@@ -231,7 +216,6 @@ export class SeletorPontos extends HTMLElement {
 				outline: none;	
 			}
 		</style>
-		<link rel='stylesheet'/>
 		<div id='div-principal'>
 			<div id='div-pontos-principais'></div>
 			<div id='div-pontos-extras' class='info-adicional'>

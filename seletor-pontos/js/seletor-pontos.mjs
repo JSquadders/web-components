@@ -2,11 +2,6 @@ export class SeletorPontos extends HTMLElement {
 	constructor() {
 		super();
 		this.attachShadow({mode: 'open'});
-		this.render();
-	}
-
-	connectedCallback() {
-		console.log('connectedCallback');
 		this.shadowRoot.addEventListener('change', event => {
 			console.log('change');
 			let pontuacaoIncremento;
@@ -20,9 +15,12 @@ export class SeletorPontos extends HTMLElement {
 		});
 	}
 
-	static get observedAttributes() {
-		return ['data-pontos', 'data-max-pontos'];
+	connectedCallback() {
+		console.log('connectedCallback');
+		this.render();
 	}
+
+	static get observedAttributes() {return ['data-pontos', 'data-max-pontos']}
 
 	attributeChangedCallback(nome, valorAntigo, valorNovo) {
 		console.log('attributeChanged', nome, valorAntigo, valorNovo);
@@ -30,7 +28,7 @@ export class SeletorPontos extends HTMLElement {
 			case 'data-pontos':
 				valorNovo = (+valorNovo || 0);
 				if (valorAntigo == valorNovo) return;
-				if (valorNovo > (+this.dataset.maxPontos + +this.dataset.maxPontosExtras)) {
+				if (valorNovo > (+this.maxPontos + +this.maxPontosExtras)) {
 					this.pontos = valorAntigo; // @todo dispara o callback outra vez. Processamento desnecessário
 					return;
 				}
@@ -50,8 +48,8 @@ export class SeletorPontos extends HTMLElement {
 		console.log('atualizarBolinhas');
 		this._divPontosPrincipais.querySelectorAll('input[type="checkbox"]').forEach(checkbox => checkbox.checked = (+checkbox.value <= this.pontos));
 		if (!!this._divPontosExtras) {
-			if (this.pontos >= +this.dataset.maxPontos) {
-				const pontosExtras = this.pontos - this.dataset.maxPontos;
+			if (this.pontos >= +this.maxPontos) {
+				const pontosExtras = this.pontos - this.maxPontos;
 				this._iptPontosExtras.value = '+' + ((pontosExtras > 0) ? pontosExtras : 0);
 				this._divPontosExtras.classList.remove('fadeOut');
 				this._divPontosExtras.classList.add('fadeIn');
@@ -66,7 +64,12 @@ export class SeletorPontos extends HTMLElement {
 	_templateCheckboxes() {
 		console.log('_templateCheckboxes', 'maxPontos', this);
 		const nome = (this.getAttribute('name') || '');
-		return [...Array(+this.dataset.maxPontos)].reduce((acumulador, atual, i) => {return acumulador += `<input type='checkbox' name='${nome}' value='${i + 1}'/>`}, '');
+
+		let retorno = '';
+		for (let i = 1; i <= +this.maxPontos; i++)
+			retorno += `<input type='checkbox' name='${nome}' value='${i}'/>`;
+		
+		return retorno;
 	}
 
 	_template() {
@@ -144,7 +147,7 @@ export class SeletorPontos extends HTMLElement {
 
 		let html = `<div id='div-principal'><div id='div-pontos-principais'>${this._templateCheckboxes()}</div>`;
 		
-		if (!!this.dataset.maxPontosExtras) {
+		if (!!this.maxPontosExtras) {
 			html += /* html */ `<div id='div-pontos-extras' class='info-adicional'>
 					<button id='remover-pontos-extras' class='botao remover-atributo'>-</button>
 					<input id='pontos-extras' type='text' class='campo-redondo adicional' readonly/>
@@ -164,19 +167,18 @@ export class SeletorPontos extends HTMLElement {
 		if (this._divPontosExtras) {
 			this._iptPontosExtras = this._divPontosExtras.querySelector('#pontos-extras');
 			this._divPontosExtras.querySelector('#remover-pontos-extras').addEventListener('click', () => {if (+this._iptPontosExtras.value) +this.pontos--});
-			this._divPontosExtras.querySelector('#adicionar-pontos-extras').addEventListener('click', () => {if (this.pontos < (+this.dataset.maxPontosExtras + +this.dataset.maxPontos)) +this.pontos++});
+			this._divPontosExtras.querySelector('#adicionar-pontos-extras').addEventListener('click', () => {if (this.pontos < (+this.maxPontosExtras + +this.maxPontos)) +this.pontos++});
 		}
 
 		this.atualizarBolinhas();
 	}
 
-	get pontos() {
-		return +this.dataset.pontos;
-	}
-
-	set pontos(valor) {
-		this.dataset.pontos = +valor;
-	}
+	get pontos() {return +this.dataset.pontos}
+	set pontos(valor) {this.dataset.pontos = +valor}
+	get maxPontos() {return +this.dataset.maxPontos}
+	set maxPontos(valor) {this.dataset.maxPontos = +valor}
+	get maxPontosExtras() {return +this.dataset.maxPontosExtras}
+	set maxPontosExtras(valor) {this.dataset.maxPontosExtras = +valor}
 }
 
 customElements.define('seletor-pontos', SeletorPontos);

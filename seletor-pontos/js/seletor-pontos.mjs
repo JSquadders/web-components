@@ -2,51 +2,13 @@ export class SeletorPontos extends HTMLElement {
 	constructor() {
 		super();
 		this.attachShadow({mode: 'open'});
-		this._pontos;
-		this._observador = new MutationObserver(() => this.pontos = this.dataset.pontos);
-		this.init();
+		this.render();
 	}
 
-	init() {
-		this.observar(false);
-		this.initDOM();
-		this.initEvents();
-		this.pontos = this.dataset.pontos;
-		this.observar(true);
-	}
-
-	initDOM() {
-		this.shadowRoot.innerHTML = this._template();
-		this._divPrincipal = this.shadowRoot.querySelector('#div-principal');
-		this._divPontosPrincipais = this.shadowRoot.querySelector('#div-pontos-principais');
-		this._divPontosExtras = this.shadowRoot.querySelector('#div-pontos-extras');
-		this._iptPontosExtras = this._divPontosExtras.querySelector('#pontos-extras');
-
-		const name = this.getAttribute('name');
-		const maxPontos = +this.dataset.maxPontos;
-		const pontosPrincipaisDiv = this._divPontosPrincipais;
-		for (let i = 1; i <= maxPontos; i++) {
-			const checkbox = document.createElement('input');
-			checkbox.setAttribute('type', 'checkbox');
-			if (name) checkbox.setAttribute('name', name);
-			checkbox.setAttribute('value', i);
-			pontosPrincipaisDiv.append(checkbox);
-		}
-		
-		if (!!this.dataset.maxPontosExtras) {
-			this._divPontosExtras.querySelector('#remover-pontos-extras').addEventListener('click', () => {
-				if (+this._iptPontosExtras.value)
-					this.pontos--;
-			});
-				
-			this._divPontosExtras.querySelector('#adicionar-pontos-extras').addEventListener('click', () => this.pontos++);
-		} else {
-			this._divPontosExtras.remove();
-		}
-	}
-
-	initEvents() {
-		this.shadowRoot.addEventListener("change", event => {
+	connectedCallback() {
+		console.log('connectedCallback');
+		this.shadowRoot.addEventListener('change', event => {
+			console.log('change');
 			let pontuacaoIncremento;
 
 			if (!event.target.checked && event.target.value == this.pontos)
@@ -58,14 +20,34 @@ export class SeletorPontos extends HTMLElement {
 		});
 	}
 
-	observar(sim = true) {
-		if (sim)
-			this._observador.observe(this, {attributes: true, attributeFilter: ['data-pontos']});
-		else
-			this._observador.disconnect();
+	static get observedAttributes() {
+		return ['data-pontos', 'data-max-pontos'];
+	}
+
+	attributeChangedCallback(nome, valorAntigo, valorNovo) {
+		console.log('attributeChanged', nome, valorAntigo, valorNovo);
+		switch (nome) {
+			case 'data-pontos':
+				valorNovo = (+valorNovo || 0);
+				if (valorAntigo == valorNovo) return;
+				if (valorNovo > (+this.dataset.maxPontos + +this.dataset.maxPontosExtras)) {
+					this.pontos = valorAntigo; // @todo dispara o callback outra vez. Processamento desnecessário
+					return;
+				}
+		
+				eval(this.getAttribute('aomudarpontos'));
+				if (this.dispatchEvent(new CustomEvent('mudarpontos', {detail: {valorNovo: valorNovo, valorAntigo: valorAntigo}, bubbles: true, cancelable: true})))
+					this.atualizarBolinhas();
+			break;
+			case 'data-max-pontos':
+				if (valorAntigo == valorNovo) return;
+				this.render();
+			break;
+		}
 	}
 
 	atualizarBolinhas() {
+		console.log('atualizarBolinhas');
 		this._divPontosPrincipais.querySelectorAll('input[type="checkbox"]').forEach(checkbox => checkbox.checked = (+checkbox.value <= this.pontos));
 		if (!!this._divPontosExtras) {
 			if (this.pontos >= +this.dataset.maxPontos) {
@@ -80,37 +62,16 @@ export class SeletorPontos extends HTMLElement {
 			}
 		}
 	}
-
-	get pontos() {
-		return +this._pontos;
-	}
-
-	set pontos(valor) {
-		valor = (+valor || 0)
-
-		if (valor == this._pontos)
-			return;
-		
-		if (valor > (+this.dataset.maxPontos + +this.dataset.maxPontosExtras))
-			return;
-
-		eval(this.getAttribute('aomudarpontos'));
-		
-		if (!this.dispatchEvent(new CustomEvent('mudarpontos', {detail: {valorNovo: valor, valorAntigo: this._pontos}, bubbles: true, cancelable: true}))) {
-			this.atualizarBolinhas();
-			return;
-		}
-			
-		this._pontos = valor;
-		this.observar(false);
-		this.setAttribute('data-pontos', this._pontos);
-		this.observar(true);
-		this.atualizarBolinhas();
+	
+	_templateCheckboxes() {
+		console.log('_templateCheckboxes', 'maxPontos', this);
+		const nome = (this.getAttribute('name') || '');
+		return [...Array(+this.dataset.maxPontos)].reduce((acumulador, atual, i) => {return acumulador += `<input type='checkbox' name='${nome}' value='${i + 1}'/>`}, '');
 	}
 
 	_template() {
-		return /* html */`
-			<style>
+		console.log('_template');
+		const estilo = /* html */ `<style>
 			input[type='checkbox'] {	
 				width: 15px;
 				height: 15px;
@@ -164,33 +125,9 @@ export class SeletorPontos extends HTMLElement {
 				pointer-events: none;
 			}
 
-			.fastFadeIn {
-				opacity: 1;
-				transition: opacity 0.5s;
-			}
-
 			.fadeIn {
 				opacity: 1;
-				transition: opacity 1s;
-			}
-
-			.slowFadeIn {
-				opacity: 1;
-				transition: opacity 3s;
-			}
-
-			.campo {
-				margin: 0;
-				padding-bottom: 1em;
-				border: 1px solid #ccc;
-				padding: .7em;
-			}
-
-			.campo-medio {
-				display: inline-block;
-				padding-right: .5em;
-				width: 75%;
-				height: 40px;
+				transition: opacity 0.5s;
 			}
 
 			.campo-redondo {
@@ -203,28 +140,42 @@ export class SeletorPontos extends HTMLElement {
 				width: 40px;
 				height: 40px;	
 			}
+		</style>`;
 
-			.campo-redondo-medio {
-				border-radius: 100%;
-				border: var(--bolinha-borda, solid 1px #ccc);
-				vertical-align: middle;
-				text-align: center;
-				font-weight: bold;
-				font-size: 18px;
-				width: 50px;
-				height: 50px;
-				outline: none;	
-			}
-		</style>
-		<div id='div-principal'>
-			<div id='div-pontos-principais'></div>
-			<div id='div-pontos-extras' class='info-adicional'>
-				<button id='remover-pontos-extras' class='botao remover-atributo'>-</button>
-				<input id='pontos-extras' type='text' class='campo-redondo adicional' readonly=''/>
-				<button id='adicionar-pontos-extras' class='botao adicionar-atributo'>+</button>
-			</div>
-		</div>
-		`;
+		let html = `<div id='div-principal'><div id='div-pontos-principais'>${this._templateCheckboxes()}</div>`;
+		
+		if (!!this.dataset.maxPontosExtras) {
+			html += /* html */ `<div id='div-pontos-extras' class='info-adicional'>
+					<button id='remover-pontos-extras' class='botao remover-atributo'>-</button>
+					<input id='pontos-extras' type='text' class='campo-redondo adicional' readonly/>
+					<button id='adicionar-pontos-extras' class='botao adicionar-atributo'>+</button>
+				</div>
+			</div>`;
+		}
+		return estilo + html;
+	}
+	
+	render() {
+		console.log('render');
+		this.shadowRoot.innerHTML = this._template();
+		this._divPontosPrincipais = this.shadowRoot.querySelector('#div-pontos-principais')
+		this._divPontosExtras = this.shadowRoot.querySelector('#div-pontos-extras');
+
+		if (this._divPontosExtras) {
+			this._iptPontosExtras = this._divPontosExtras.querySelector('#pontos-extras');
+			this._divPontosExtras.querySelector('#remover-pontos-extras').addEventListener('click', () => {if (+this._iptPontosExtras.value) +this.pontos--});
+			this._divPontosExtras.querySelector('#adicionar-pontos-extras').addEventListener('click', () => {if (this.pontos < (+this.dataset.maxPontosExtras + +this.dataset.maxPontos)) +this.pontos++});
+		}
+
+		this.atualizarBolinhas();
+	}
+
+	get pontos() {
+		return +this.dataset.pontos;
+	}
+
+	set pontos(valor) {
+		this.dataset.pontos = +valor;
 	}
 }
 

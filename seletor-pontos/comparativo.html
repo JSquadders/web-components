@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang='pt-br'>
+<head>
+	<title>Custom element de pontos</title>
+	<meta charset='UTF-8'>
+	<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	<meta name='viewport' content='width=device-width, initial-scale=1'>
+	<script type='module' src='./vanilla/seletor-pontos.mjs'></script>
+	<script type='module' src='./LitElement/seletor-pontos-lit.bundle.mjs'></script>
+	<style>
+		:root {
+			--bolinha-marcada: #5599F2;
+			--bolinha-desmarcada: #eee;
+			--bolinha-borda: 0px;
+			--bolinha-margem: 10px;
+		}
+
+		body {
+			font-family: Verdana, Geneva, Tahoma, sans-serif;
+			margin: 10px 40px 0px 40px;
+			color: whitesmoke;
+			background-color: black;
+		}
+
+		div#comparativo {
+			display: flex;
+		}
+		
+		div#comparativo > div {
+			margin: auto;
+			text-align: center;
+		}
+
+		h2 {
+			font-weight: lighter;
+			letter-spacing: 3px;
+			margin-bottom: 20px;
+		}
+
+	</style>
+</head>
+<body>
+	<div id='comparativo'>
+		<div>
+			<h2>Vanilla</h2>
+			<seletor-pontos data-max-pontos='5' data-pontos='1' data-max-pontos-extras='5' style="--bolinha-marcada: #F7E018"></seletor-pontos>
+		</div>
+		<div>
+			<h2>LitElement</h2>
+			<seletor-pontos-lit maxpontos='5' pontos='1' maxpontosextras='5' style="--bolinha-marcada: #2196F3"></seletor-pontos-lit>
+		</div>
+	</div>
+</body>
+</html>

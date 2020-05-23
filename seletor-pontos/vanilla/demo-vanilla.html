@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang='pt-br'>
+<head>
+	<title>Custom element de pontos</title>
+	<meta charset='UTF-8'>
+	<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	<meta name='viewport' content='width=device-width, initial-scale=1'>
+	<style>
+		:root {
+			--bolinha-marcada: #5599F2;
+			--bolinha-desmarcada: #eee;
+			--bolinha-borda: solid 1px blue;
+			--bolinha-margem: 10px;
+		}
+	</style>
+</head>
+<body>
+	<script type='module' src='./seletor-pontos.mjs'></script>
+	Vanilla
+	<div>
+		Padrão <seletor-pontos data-max-pontos="5" data-max-pontos-extras="3" data-pontos="2"></seletor-pontos>
+		<br/>
+	</div>
+</body>
+</html>

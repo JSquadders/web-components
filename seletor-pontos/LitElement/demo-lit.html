@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang='pt-br'>
+<head>
+	<title>Custom element de pontos</title>
+	<meta charset='UTF-8'>
+	<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	<meta name='viewport' content='width=device-width, initial-scale=1'>
+	<style>
+		:root {
+			--bolinha-marcada: #5599F2;
+			--bolinha-desmarcada: #eee;
+			--bolinha-borda: solid 1px blue;
+			--bolinha-margem: 10px;
+		}
+
+		body {
+			background-color: black;
+		}
+	</style>
+	<script type='module' src='./seletor-pontos-lit.bundle.js'></script>
+</head>
+<body>
+	LitElement
+	<seletor-pontos-lit maxpontos="5" maxpontosextras="3" pontos="2"></seletor-pontos-lit>
+	<seletor-pontos-lit></seletor-pontos-lit>
+	<seletor-pontos-lit maxpontos="3" pontos="3"></seletor-pontos-lit>
+</body>
+</html>
